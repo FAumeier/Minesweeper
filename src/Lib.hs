@@ -18,6 +18,8 @@ data Field = Field
                     { x :: Int
                     , y :: Int
                     , hasMine :: Bool -- Noch ein Feld -> Opened :: Bool
+                    , surroundingMines :: Int
+                    , isOpened :: Bool
                     } deriving (Show)
 
 data Board = Board
@@ -28,7 +30,7 @@ data Board = Board
 -- Methods
 
 createBoard :: Int -> Board
-createBoard m = Board [ Field x y False | x <- [1..m], y <- [1..m]] m
+createBoard m = Board [ Field x y False 0 False | x <- [1..m], y <- [1..m]] m
 
 --printRow :: Board -> [Field] -- Testweise irgendeine Reihe
 
@@ -39,8 +41,8 @@ createBoard m = Board [ Field x y False | x <- [1..m], y <- [1..m]] m
 
 stringBoard :: Board -> [String]
 stringBoard board = [ if y feld >= size board
-                      then show (x feld, y feld, hasMine feld) ++ "\n"
-                      else show (x feld, y feld, hasMine feld) | feld <- fields board
+                      then show (x feld, y feld, hasMine feld, surroundingMines feld, isOpened feld) ++ "\n"
+                      else show (x feld, y feld, hasMine feld, surroundingMines feld, isOpened feld) | feld <- fields board
                     ]
 
 showBoard :: [String] -> IO ()
