@@ -5,6 +5,7 @@ module Lib
     , createBoard
     , showBoard
     , stringBoard
+    , openField
     ) where
 
 import Data.List
@@ -15,8 +16,8 @@ someFunc = putStrLn "someFunc"
 -- Data Types
 
 data Field = Field 
-                    { x :: Int
-                    , y :: Int
+                    { xCor :: Int
+                    , yCor :: Int
                     , hasMine :: Bool -- Noch ein Feld -> Opened :: Bool
                     , surroundingMines :: Int
                     , isOpened :: Bool
@@ -40,10 +41,20 @@ createBoard m = Board [ Field x y False 0 False | x <- [1..m], y <- [1..m]] m
 --                                                      yAsString = show y
 
 stringBoard :: Board -> [String]
-stringBoard board = [ if y feld >= size board
-                      then show (x feld, y feld, hasMine feld, surroundingMines feld, isOpened feld) ++ "\n"
-                      else show (x feld, y feld, hasMine feld, surroundingMines feld, isOpened feld) | feld <- fields board
+stringBoard board = [ if yCor feld >= size board
+                      then show (xCor feld, yCor feld, hasMine feld, surroundingMines feld, isOpened feld) ++ "\n"
+                      else show (xCor feld, yCor feld, hasMine feld, surroundingMines feld, isOpened feld) | feld <- fields board
                     ]
 
 showBoard :: [String] -> IO ()
 showBoard strings = putStrLn board where board = intercalate " " strings
+
+openField :: Int -> Int -> Board -> [Field]                      
+openField x y (Board fields m) = [ if xCor field == x && yCor field == y 
+                                   then do let xCoord = xCor field 
+                                               yCoord = yCor field
+                                               mine = hasMine field
+                                               surr = surroundingMines field
+                                               newField = Field xCoord yCoord mine surr True
+                                            in newField    
+                                   else field | field <- fields]
