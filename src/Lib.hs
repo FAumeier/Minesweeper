@@ -6,6 +6,7 @@ module Lib
     , showBoard
     , stringBoard
     , openField
+    , setFieldOpen
     ) where
 
 import Data.List
@@ -15,7 +16,7 @@ someFunc = putStrLn "someFunc"
 
 -- Data Types
 
-data Field = Field 
+data Field = Field
                     { xCor :: Int
                     , yCor :: Int
                     , hasMine :: Bool -- Noch ein Feld -> Opened :: Bool
@@ -26,7 +27,7 @@ data Field = Field
 data Board = Board
                    { fields :: [Field]
                    , size :: Int
-                   } deriving (Show) 
+                   } deriving (Show)
 
 -- Methods
 
@@ -49,12 +50,17 @@ stringBoard board = [ if yCor feld >= size board
 showBoard :: [String] -> IO ()
 showBoard strings = putStrLn board where board = intercalate " " strings
 
-openField :: Int -> Int -> Board -> [Field]                      
-openField x y (Board fields m) = [ if xCor field == x && yCor field == y 
-                                   then do let xCoord = xCor field 
+openField :: Int -> Int -> Board -> [Field]
+openField x y (Board fields m) = [ if xCor field == x && yCor field == y
+                                   then do let xCoord = xCor field
                                                yCoord = yCor field
                                                mine = hasMine field
                                                surr = surroundingMines field
                                                newField = Field xCoord yCoord mine surr True
-                                            in newField    
+                                            in newField
                                    else field | field <- fields]
+setFieldOpen :: Field -> Field
+setFieldOpen oldField = Field x y mine surr True where x = xCor oldField
+                                                       y = yCor oldField
+                                                       mine = hasMine oldField
+                                                       surr = surroundingMines oldField
