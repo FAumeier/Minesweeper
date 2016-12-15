@@ -52,12 +52,7 @@ showBoard strings = putStrLn board where board = intercalate " " strings
 
 openField :: Int -> Int -> Board -> [Field]
 openField x y (Board fields m) = [ if xCor field == x && yCor field == y
-                                   then do let xCoord = xCor field
-                                               yCoord = yCor field
-                                               mine = hasMine field
-                                               surr = surroundingMines field
-                                               newField = Field xCoord yCoord mine surr True
-                                            in newField
+                                   then setFieldOpen field
                                    else field | field <- fields]
 setFieldOpen :: Field -> Field
 setFieldOpen oldField = Field x y mine surr True where x = xCor oldField
