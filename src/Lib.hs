@@ -1,6 +1,9 @@
 module Lib
     ( Field(..)
     , Board(..)
+    , GameState(..)
+    , State(..)
+    , neighbours
     ) where
 
 import Data.List
@@ -30,7 +33,14 @@ updateBoard [fields] (x, y) field = take x [fields] ++ [updatedRow] ++ drop (x+1
 replaceField :: [Field] -> Int -> Field -> [Field]
 replaceField fields i element = take i fields ++ [element] ++ drop (i+1) fields
 
-  --- Kopiere alle Reihen bis Reihe x
-  --- Kopiere alle Elemente bis Element y
-  --- Füge das neue Feld an Stelle von Element y ein
-  --- Kopiere den Rest
+neighbours :: GameState -> Coordinates -> [Coordinates]
+neighbours state (xCor,yCor)
+                         | xCor < m && yCor < m && xCor >= 0 && yCor >= 0 = removeItem (xCor, yCor) [ (x,y) | x <- [xCor-1..xCor+1], y <- [yCor-1..yCor+1], x >= 0, x < m, y >= 0, y < m]
+                         | otherwise = [(x,y) | x <- [1..m], y <- [1..m]]
+           where matrix = board state
+                 m = length matrix
+
+removeItem :: Coordinates -> [Coordinates] -> [Coordinates]
+removeItem _ []                 = []
+removeItem x (y:ys) | x == y    = removeItem x ys
+                    | otherwise = y : removeItem x ys
