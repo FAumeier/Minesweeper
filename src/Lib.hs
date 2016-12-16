@@ -3,7 +3,7 @@ module Lib
     , Board(..)
     , GameState(..)
     , State(..)
-    , neighbours
+    , minesAround
     ) where
 
 import Data.List
@@ -44,3 +44,8 @@ removeItem :: Coordinates -> [Coordinates] -> [Coordinates]
 removeItem _ []                 = []
 removeItem x (y:ys) | x == y    = removeItem x ys
                     | otherwise = y : removeItem x ys
+
+minesAround :: Coordinates -> GameState -> Int
+minesAround (x,y) state = length $ intersect nbs mineField
+            where nbs = neighbours state (x,y)
+                  mineField = mines state
