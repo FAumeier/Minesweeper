@@ -67,7 +67,4 @@ isFieldOnMine field state = field `elem` listOfMines
 updateCells :: GameState -> Coordinates -> GameState -- seems to make problems...
 updateCells state coordinate = newState
             where listOfNeighbours = neighbours state coordinate
-                  newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate]) --map updateSingleCell state listOfNeighbours
-
--- beispielMatrix: [[Marked, Unmarked,Open 2, Open 1],[Unmarked,Unmarked,Mine, Open 1],[Unmarked,Unmarked,Unmarked,Marked],[Unmarked,Unmarked,Unmarked,Unmarked]]
--- mines = [(0,0),(1,0),(2,1),(1,3),(3,3)]
+                  newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate])
