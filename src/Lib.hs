@@ -68,3 +68,6 @@ updateCells :: GameState -> Coordinates -> GameState -- seems to make problems..
 updateCells state coordinate = newState
             where listOfNeighbours = neighbours state coordinate
                   newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate])
+
+playStep :: Action -> GameState -> GameState
+                  
