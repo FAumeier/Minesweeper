@@ -3,6 +3,7 @@ module Lib
     , Board(..)
     , GameState(..)
     , State(..)
+    , updateCells
     , updateSingleCell
     ) where
 
@@ -16,16 +17,16 @@ type Board = [[Field]]
 data GameState = GameState { board :: Board
                            , mines :: [Coordinates]
                            , state :: State
-                           }
+                           } deriving (Show)
 type Coordinates = (Int, Int)
-data State = Won | Lost | Undecided
+data State = Won | Lost | Undecided deriving (Show)
 
 -- data Action = Toggle Coordinates | openField Coordinates
 
 (!!!) :: Board -> Coordinates -> Field
 (!!!) [fields] (x, y) = [fields] !! x !! y
 
-updateBoard :: Board -> Coordinates -> Field -> Board --TODO: Exception: Lib.hs:(29,1)-(31,55): Non-exhaustive patterns in function updateBoard
+updateBoard :: Board -> Coordinates -> Field -> Board
 updateBoard board (x, y) field = take x board ++ [updatedRow] ++ drop (x+1) board
             where row = board !! x
                   updatedRow = replaceField row y field
@@ -50,7 +51,7 @@ minesAround (x,y) state = length $ intersect nbs mineField
             where nbs = neighbours state (x,y)
                   mineField = mines state
 
-updateSingleCell :: GameState -> Coordinates -> GameState
+updateSingleCell :: GameState -> Coordinates -> GameState -- Works just fine
 updateSingleCell state coordinates = newState
               where oldBoard = board state
                     around = minesAround coordinates state
@@ -62,3 +63,11 @@ updateSingleCell state coordinates = newState
 isFieldOnMine :: Coordinates-> GameState -> Bool
 isFieldOnMine field state = field `elem` listOfMines
             where listOfMines = mines state
+
+updateCells :: GameState -> Coordinates -> GameState -- seems to make problems...
+updateCells state coordinate = newState
+            where listOfNeighbours = neighbours state coordinate
+                  newState = foldl updateSingleCell state listOfNeighbours--map updateSingleCell state listOfNeighbours
+
+-- beispielMatrix: [[Marked, Unmarked,Open 2, Open 1],[Unmarked,Unmarked,Mine, Open 1],[Unmarked,Unmarked,Unmarked,Marked],[Unmarked,Unmarked,Unmarked,Unmarked]]
+-- mines = [(0,0),(1,0),(2,1),(1,3),(3,3)]
