@@ -3,7 +3,7 @@ module Lib
     , Board(..)
     , GameState(..)
     , State(..)
-    , minesAround
+    , updateSingleCell
     ) where
 
 import Data.List
@@ -25,9 +25,9 @@ data State = Won | Lost | Undecided
 (!!!) :: Board -> Coordinates -> Field
 (!!!) [fields] (x, y) = [fields] !! x !! y
 
-updateBoard :: Board -> Coordinates -> Field -> Board
-updateBoard [fields] (x, y) field = take x [fields] ++ [updatedRow] ++ drop (x+1) [fields]
-            where row = [fields] !! x
+updateBoard :: Board -> Coordinates -> Field -> Board --TODO: Exception: Lib.hs:(29,1)-(31,55): Non-exhaustive patterns in function updateBoard
+updateBoard board (x, y) field = take x board ++ [updatedRow] ++ drop (x+1) board
+            where row = board !! x
                   updatedRow = replaceField row y field
 
 replaceField :: [Field] -> Int -> Field -> [Field]
@@ -49,3 +49,16 @@ minesAround :: Coordinates -> GameState -> Int
 minesAround (x,y) state = length $ intersect nbs mineField
             where nbs = neighbours state (x,y)
                   mineField = mines state
+
+updateSingleCell :: GameState -> Coordinates -> GameState
+updateSingleCell state coordinates = newState
+              where oldBoard = board state
+                    around = minesAround coordinates state
+                    field = if isFieldOnMine coordinates state == True then Mine else Open around
+                    newBoard = updateBoard oldBoard coordinates field
+                    minesOnBoard = mines state
+                    newState = GameState newBoard minesOnBoard Undecided
+
+isFieldOnMine :: Coordinates-> GameState -> Bool
+isFieldOnMine field state = field `elem` listOfMines
+            where listOfMines = mines state
