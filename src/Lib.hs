@@ -64,7 +64,7 @@ isFieldOnMine :: Coordinates-> GameState -> Bool
 isFieldOnMine field state = field `elem` listOfMines
             where listOfMines = mines state
 
-updateCells :: GameState -> Coordinates -> GameState -- seems to make problems...
+updateCells :: GameState -> Coordinates -> GameState
 updateCells state coordinate = newState
             where listOfNeighbours = neighbours state coordinate
                   newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate])
