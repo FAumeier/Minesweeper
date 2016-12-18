@@ -1,11 +1,4 @@
-module Lib
-    ( Field(..)
-    , Board(..)
-    , GameState(..)
-    , State(..)
-    , Action(..)
-    , playStep
-    ) where
+module Minesweeper where
 
 import Data.List
 
@@ -18,6 +11,7 @@ data GameState = GameState { board :: Board
                            , mines :: [Coordinates]
                            , state :: State
                            } deriving (Show)
+
 type Coordinates = (Int, Int)
 data State = Won | Lost | Undecided deriving (Show)
 
