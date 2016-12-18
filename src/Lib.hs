@@ -3,8 +3,8 @@ module Lib
     , Board(..)
     , GameState(..)
     , State(..)
-    , updateCells
-    , updateSingleCell
+    , Action(..)
+    , playStep
     ) where
 
 import Data.List
@@ -21,10 +21,10 @@ data GameState = GameState { board :: Board
 type Coordinates = (Int, Int)
 data State = Won | Lost | Undecided deriving (Show)
 
--- data Action = Toggle Coordinates | openField Coordinates
+data Action = Toggle Coordinates | OpenField Coordinates
 
 (!!!) :: Board -> Coordinates -> Field
-(!!!) [fields] (x, y) = [fields] !! x !! y
+(!!!) board (x, y) = board !! x !! y
 
 updateBoard :: Board -> Coordinates -> Field -> Board
 updateBoard board (x, y) field = take x board ++ [updatedRow] ++ drop (x+1) board
@@ -70,4 +70,27 @@ updateCells state coordinate = newState
                   newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate])
 
 playStep :: Action -> GameState -> GameState
-                  
+playStep a gamestate@GameState{state = Lost} = gamestate
+playStep a gamestate@GameState{state = Won} = gamestate
+playStep (Toggle (x,y)) gamestate = newState
+        where oldField = (board gamestate) !!! (x,y)
+              newField = case oldField of
+                          Marked -> Unmarked
+                          Unmarked -> Marked
+                          other -> other
+              minesOnBoard = mines gamestate
+              oldState = state gamestate
+              oldBoard = board gamestate
+              newBoard = updateBoard oldBoard (x,y) newField
+              newState = GameState newBoard minesOnBoard oldState
+playStep (OpenField (x,y)) gamestate = if (x,y) `elem` (mines gamestate)
+                                       then (updateSingleCell gamestate (x,y)){state=Lost}
+                                       else setState $ updateCells gamestate (x,y)
+
+setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate) [0..]
+                                             , (col, x) <- zip row [0..]]
+                     then gamestate {state = Won}
+                     else gamestate
+                     where open (r,c,Open i) = True
+                           open (r,c,Mine) = True
+                           open (r,c,_) = (r,c) `elem` (mines gamestate)
