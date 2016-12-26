@@ -1,16 +1,16 @@
-name:                minesweeper
+name:                Minesweeper
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/value/minesweeper#readme
+homepage:            https://github.com/githubuser/Minesweeper#readme
 license:             BSD3
 license-file:        LICENSE
-author:              value
-maintainer:          value
-copyright:           value
-category:            value
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2016 Author name here
+category:            Web
 build-type:          Simple
--- extra-source-files:
+extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
@@ -19,7 +19,7 @@ library
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
 
-executable minesweeper-exe
+executable Minesweeper-exe
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
@@ -29,15 +29,15 @@ executable minesweeper-exe
                      , random
   default-language:    Haskell2010
 
-test-suite minesweeper-test
+test-suite Minesweeper-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                     , minesweeper
+                     , Minesweeper
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/value/minesweeper
+  location: https://github.com/githubuser/Minesweeper
