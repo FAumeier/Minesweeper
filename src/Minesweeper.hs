@@ -18,7 +18,7 @@ data State = Won | Lost | Undecided deriving (Show)
 data Action = Toggle Coordinates | OpenField Coordinates
 
 (!!!) :: Board -> Coordinates -> Field
-(!!!) board (x, y) = board !! x !! y
+board !!! (x, y) = board !! x !! y
 
 updateBoard :: Board -> Coordinates -> Field -> Board
 updateBoard board (x, y) field = take x board ++ [updatedRow] ++ drop (x+1) board

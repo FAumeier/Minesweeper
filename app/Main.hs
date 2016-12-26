@@ -1,5 +1,5 @@
 module Main where
--- first party imports 
+-- first party imports
 import System.Environment
 import Data.List
 import System.Random
@@ -19,9 +19,9 @@ wsizey = 600
 fwsizex = fromIntegral wsizex
 fwsizey = fromIntegral wsizey
 
--- generate the initial gamestate     
-start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, state=Undecided} 
-  where 
+-- generate the initial gamestate
+start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, state=Undecided}
+  where
     -- initialize board
     bd     = replicate size (replicate size Unmarked)
     -- randomly distribute mines
@@ -29,40 +29,40 @@ start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, s
     -- helper
     takeNub i xs =  go i xs []
     go 0 _ ys = ys
-    go i (x:xs) ys 
+    go i (x:xs) ys
       | x `elem` ys  = go i     xs ys
       | otherwise    = go (i-1) xs (x:ys)
 
 main =
   do
       let size = 8 -- size of the board
-      let percentage_mines = 35
+      let percentage_mines = 5
       -- two pseudo random numbers
-      init1 <- randomIO 
+      init1 <- randomIO
       init2 <- randomIO
       let gamestate = (start init1 init2 size percentage_mines)
       play (InWindow "Minesweeper 0.1" (wsizex,wsizey) (10,10)) white 1 gamestate toPicture handleEvent (\float world -> world)
-            
--- handleEvent handles mouse events     
-handleEvent (EventKey (MouseButton button) Down _ (x,y)) gs = 
+
+-- handleEvent handles mouse events
+handleEvent (EventKey (MouseButton button) Down _ (x,y)) gs =
  let -- converting mouse coordinates (x,y) to board coordinates (xnew,ynew):
-     xlen  = fromIntegral $ length $ (board gs)!!0
-     ylen  = fromIntegral $ length $ (board gs)
-     xnew  = truncate (xlen * ((x+(fwsizex/2)))/fwsizex)
-     ynew  = truncate (ylen * (abs ((((y+(fwsizey/2)))/fwsizey) -1)))
- in 
+     ylen  = fromIntegral $ length $ (board gs)!!0
+     xlen  = fromIntegral $ length $ (board gs)
+     ynew  = truncate (xlen * ((x+(fwsizex/2)))/fwsizex)
+     xnew  = truncate (ylen * (abs ((((y+(fwsizey/2)))/fwsizey) -1)))
+ in
    -- which button was pressed
-   case button of 
+   case button of
        LeftButton ->  playStep (OpenField (xnew,ynew)) gs
-       RightButton -> playStep (Toggle (xnew,ynew)) gs 
+       RightButton -> playStep (Toggle (xnew,ynew)) gs
        _           -> gs
 handleEvent (EventKey (Char 'q') Down _ _) gs = error "Stop!"
--- handle all over events (they do nothing)     
+-- handle all over events (they do nothing)
 handleEvent event state = state
 
 -- generate picture for the gamestate
 toPicture :: GameState -> Picture
-toPicture gs = Pictures $ field:message                 
+toPicture gs = Pictures $ field:message
   where
    -- the board
    field =  Translate ((-1)*fwsizex/2) (fwsizey/2) $  Scale scale scale $ Pictures [Translate (j-1) (-1*i) $ toCell e | (i,zs) <- toTup board , (j,e) <- zs]
@@ -73,7 +73,7 @@ toPicture gs = Pictures $ field:message
                  Won  -> [Translate ((-1)*fwsizex/2) ((-1)*fwsizey/4) $ Color (light $ light green) (Scale (fwsizex) (fwsizey/2)  (Polygon [(0,0),(1,0),(1,1),(0,1),(0,0)]))
                          ,Translate ((-1)*fwsizex/2.1) ((-1)*fwsizey/16) $ Text "You won!"]
                  other -> []
-   -- Board to coordinates                
+   -- Board to coordinates
    toTup matrix = zip [1..] (map (zip [1..]) (board gs))
    -- calculate size of board from gamestate
    xlen  = fromIntegral $ length $ (board gs)!!0
@@ -81,7 +81,7 @@ toPicture gs = Pictures $ field:message
    -- scaling of a field
    scale = min (fwsizex/xlen) (fwsizey/ylen)
    -- picture of a field
-   toCell Marked   = flag   
+   toCell Marked   = flag
    toCell Unmarked = hidden
    toCell (Open i) = num i
    toCell Mine     = bomb
@@ -89,7 +89,7 @@ toPicture gs = Pictures $ field:message
    bomb = Pictures [box red [(0,0),(1,0),(1,1),(0,1),(0,0)],Translate (0.5) (0.5) $ Color black (circleSolid 0.3)]
    -- Marks
    flag = Pictures [box (greyN 0.7)  [(0,0),(1,0),(1,1),(0,1),(0,0)],
-                    (Pictures [box (light $ yellow) [(0.7,0.1),(0.7,0.85),(0.85,0.85),(0.85,0.1),(0.7,0.1)], 
+                    (Pictures [box (light $ yellow) [(0.7,0.1),(0.7,0.85),(0.85,0.85),(0.85,0.1),(0.7,0.1)],
                                box (dark $ red)     [(0.2,0.6),(0.8,0.6),(0.8,0.8),(0.2,0.8),(0.2,0.6)]])]
    -- hidden
    hidden = box  (greyN 0.5) [(0,0),(1,0),(1,1),(0,1),(0,0)]
