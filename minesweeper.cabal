@@ -26,6 +26,7 @@ executable minesweeper-exe
   build-depends:       base
                      , minesweeper
                      , gloss==1.10.*
+                     , random
   default-language:    Haskell2010
 
 test-suite minesweeper-test
