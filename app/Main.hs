@@ -18,7 +18,7 @@ wsizey = 600
 -- converting them to float
 fwsizex = fromIntegral wsizex
 fwsizey = fromIntegral wsizey
-
+{-
 -- generate the initial gamestate
 start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, state=Undecided}
   where
@@ -32,15 +32,31 @@ start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, s
     go i (x:xs) ys
       | x `elem` ys  = go i     xs ys
       | otherwise    = go (i-1) xs (x:ys)
+-}
+
+start :: Int -> GameState
+start size = newState
+    where
+      state = Undecided
+      bd = replicate size $ replicate size Unmarked
+      ms = generateCoordinates size
+      newState = GameState bd ms state
+
+generateCoordinates :: Int -> [Coordinates]
+generateCoordinates size =
+        let liste = zip (randomRs (0,size-1)  (mkStdGen 2)) (randomRs (0,size-1)  (mkStdGen 5))
+        in randomizeCoordinates 15 liste []
+
+randomizeCoordinates :: Int -> [(Int, Int)] -> [(Int, Int)] -> [Coordinates]
+randomizeCoordinates 0 _ ys = ys
+randomizeCoordinates i (x:xs) ys
+  | x `elem` ys = randomizeCoordinates i xs ys
+  | otherwise = randomizeCoordinates (i-1) xs (x:ys)
 
 main =
   do
       let size = 8 -- size of the board
-      let percentage_mines = 5
-      -- two pseudo random numbers
-      init1 <- randomIO
-      init2 <- randomIO
-      let gamestate = (start init1 init2 size percentage_mines)
+      let gamestate = start size
       play (InWindow "Minesweeper 0.1" (wsizex,wsizey) (10,10)) white 1 gamestate toPicture handleEvent (\float world -> world)
 
 -- handleEvent handles mouse events
