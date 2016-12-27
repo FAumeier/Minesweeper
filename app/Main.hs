@@ -18,21 +18,6 @@ wsizey = 600
 -- converting them to float
 fwsizex = fromIntegral wsizex
 fwsizey = fromIntegral wsizey
-{-
--- generate the initial gamestate
-start init1 init2 size percentage_mines =   GameState {board = bd, mines = ms, state=Undecided}
-  where
-    -- initialize board
-    bd     = replicate size (replicate size Unmarked)
-    -- randomly distribute mines
-    ms     = takeNub (round $ (fromIntegral $ size*size)*percentage_mines/100) $ zip (randomRs (0,size-1)  (mkStdGen init1)) (randomRs (0,size-1) (mkStdGen init2))
-    -- helper
-    takeNub i xs =  go i xs []
-    go 0 _ ys = ys
-    go i (x:xs) ys
-      | x `elem` ys  = go i     xs ys
-      | otherwise    = go (i-1) xs (x:ys)
--}
 
 start :: Int -> GameState
 start size = newState
