@@ -45,12 +45,17 @@ minesAround (x,y) state = length $ intersect nbs mineField
             where nbs = neighbours state (x,y)
                   mineField = mines state
 
-updateSingleCell :: GameState -> Coordinates -> GameState -- Works just fine
-updateSingleCell state coordinates = newState
+updateSingleCell :: GameState -> Bool -> Coordinates -> GameState
+updateSingleCell state showMine (x,y) = newState
               where oldBoard = board state
-                    around = minesAround coordinates state
-                    field = if isFieldOnMine coordinates state == True then Mine else Open around
-                    newBoard = updateBoard oldBoard coordinates field
+                    around = minesAround (x,y) state
+                    oldField = oldBoard !!! (x,y)
+                    field = if isFieldOnMine (x,y) state == True
+                              then if showMine == True
+                                    then Mine
+                                    else Unmarked
+                              else Open around
+                    newBoard = updateBoard oldBoard (x,y) field
                     minesOnBoard = mines state
                     newState = GameState newBoard minesOnBoard Undecided
 
@@ -59,9 +64,14 @@ isFieldOnMine field state = field `elem` listOfMines
             where listOfMines = mines state
 
 updateCells :: GameState -> Coordinates -> GameState
-updateCells state coordinate = newState
-            where listOfNeighbours = neighbours state coordinate
-                  newState = foldl updateSingleCell state (listOfNeighbours ++ [coordinate])
+updateCells gs (x,y) =
+  let coords = (x,y):(neighbours gs (x,y))
+  in foldl (\st a -> updateSingleCell st False a) gs coords
+
+showMines :: GameState -> GameState
+showMines gs =
+  let coords = mines gs
+  in foldl (\st a -> updateSingleCell st True a) gs coords
 
 playStep :: Action -> GameState -> GameState
 playStep a gamestate@GameState{state = Lost} = gamestate
@@ -78,7 +88,7 @@ playStep (Toggle (x,y)) gamestate = newState
               newBoard = updateBoard oldBoard (x,y) newField
               newState = GameState newBoard minesOnBoard oldState
 playStep (OpenField (x,y)) gamestate = if (x,y) `elem` (mines gamestate)
-                                       then (updateSingleCell gamestate (x,y)){state=Lost}
+                                       then (showMines gamestate){state=Lost}
                                        else setState $ updateCells gamestate (x,y)
 
 setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate) [0..]
@@ -86,5 +96,5 @@ setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate)
                      then gamestate {state = Won}
                      else gamestate
                      where open (r,c,Open i) = True
-                           open (r,c,Mine) = True
+                           open (r,c,Mine) = True -- Mine
                            open (r,c,_) = (r,c) `elem` (mines gamestate)
