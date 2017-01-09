@@ -19,17 +19,17 @@ wsizey = 600
 fwsizex = fromIntegral wsizex
 fwsizey = fromIntegral wsizey
 
-start :: Int -> GameState
-start size = newState
+start :: Int -> Int -> Int -> GameState
+start size random1 random2 = newState
     where
       state = Undecided
       bd = replicate size $ replicate size Unmarked
-      ms = generateCoordinates size
+      ms = generateCoordinates size random1 random2
       newState = GameState bd ms state
 
-generateCoordinates :: Int -> [Coordinates]
-generateCoordinates size =
-        let liste = zip (randomRs (0,size-1)  (mkStdGen 2)) (randomRs (0,size-1)  (mkStdGen 5))
+generateCoordinates :: Int -> Int -> Int -> [Coordinates]
+generateCoordinates size randomInteger1 randomInteger2 =
+        let liste = zip (randomRs (0,size-1)  (mkStdGen randomInteger1)) (randomRs (0,size-1)  (mkStdGen randomInteger2))
         in randomizeCoordinates 15 liste []
 
 randomizeCoordinates :: Int -> [(Int, Int)] -> [(Int, Int)] -> [Coordinates]
@@ -41,7 +41,9 @@ randomizeCoordinates i (coor:coors) newCoors
 main =
   do
       let size = 8 -- size of the board
-      let gamestate = start size
+      random1 <- randomIO
+      random2 <- randomIO
+      let gamestate = start size random1 random2
       play (InWindow "Minesweeper 0.1" (wsizex,wsizey) (10,10)) white 1 gamestate getPicture handleEvent (\float world -> world)
 
 -- handleEvent handles mouse events
