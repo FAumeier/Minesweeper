@@ -53,7 +53,9 @@ updateSingleCell state showMine (x,y) = newState
                     field = if isFieldOnMine (x,y) state == True
                               then if showMine == True
                                     then Mine
-                                    else Unmarked
+                                    else if oldField == Marked
+                                      then Marked
+                                      else Unmarked
                               else Open around
                     newBoard = updateBoard oldBoard (x,y) field
                     minesOnBoard = mines state
