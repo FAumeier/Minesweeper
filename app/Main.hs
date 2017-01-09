@@ -16,7 +16,9 @@ wsizex = 600
 wsizey :: Int
 wsizey = 600
 -- converting them to float
+fwsizex :: Float
 fwsizex = fromIntegral wsizex
+fwsizey :: Float
 fwsizey = fromIntegral wsizey
 
 start :: Int -> Int -> Int -> Int -> GameState
@@ -41,7 +43,7 @@ randomizeCoordinates i (coor:coors) newCoors
 main =
   do
       let size = 8 -- size of the board
-      let numberOfMines = 1
+      let numberOfMines = 20
       random1 <- randomIO
       random2 <- randomIO
       let gamestate = start size numberOfMines random1 random2
@@ -75,10 +77,10 @@ getPicture gs = Pictures $ field:message
    field = getField xlen ylen gs
    -- a message if won or lost
    message = case state gs of
-                 Lost -> [Translate ((-1)*fwsizex/2) ((-1)*fwsizey/4) $ Color (light $ light red) (Scale (fwsizex) (fwsizey/2)  (Polygon [(0,0),(1,0),(1,1),(0,1),(0,0)]))
-                         ,Translate ((-1)*fwsizex/2.1) ((-1)*fwsizey/16) $ Text "Verloren!"]
-                 Won  -> [Translate ((-1)*fwsizex/2) ((-1)*fwsizey/4) $ Color (light $ light green) (Scale (fwsizex) (fwsizey/2)  (Polygon [(0,0),(1,0),(1,1),(0,1),(0,0)]))
-                         ,Translate ((-1)*fwsizex/2.1) ((-1)*fwsizey/16) $ Text "Gewonnen!"]
+                 Lost -> [Translate ((-1)*fwsizex/2) ((-1)*fwsizey/2) $ Color (light $ light red) (Scale (fwsizex) (fwsizey/11)  (Polygon [(0,0),(1,0),(1,1),(0,1)]))
+                         ,Scale (0.5) (0.5) $ Translate ((-1)*fwsizex/2.1) ((-16)*fwsizey/16) $ Text "Verloren!"]
+                 Won  -> [Translate ((-1)*fwsizex/2) ((-1)*fwsizey/4) $ Color (light $ light green) (Scale (fwsizex) (fwsizey/11)  (Polygon [(0,0),(1,0),(1,1),(0,1)]))
+                         ,Scale (0.5) (0.5) $ Translate ((-1)*fwsizex/2.1) ((-16)*fwsizey/16) $ Text "Gewonnen!"]
                  other -> []
 
 
