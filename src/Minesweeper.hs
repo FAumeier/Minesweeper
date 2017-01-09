@@ -93,10 +93,10 @@ playStep (OpenField (x,y)) gamestate = if (x,y) `elem` (mines gamestate)
                                        then (showMines gamestate){state=Lost}
                                        else setState $ updateCells gamestate (x,y)
 
-setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate) [0..]
-                                             , (col, x) <- zip row [0..]]
-                     then gamestate {state = Won}
+setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate) [0..] -- wenn alle Felder offen sind dann ist das Spiel gewonnen. open ist Bedingung die alle Elemente der Liste Erfüllen müssen.
+                                             , (col, x) <- zip row [0..]] -- Board aus Koordinaten erstellen. Gibt z.b aus: [(0,0,"Mine"),(1,0,"Open"),(2,0,"Closed"),(0,1,"Open"),(1,1,"Open"),(2,1,"Open")]
+                     then won
                      else gamestate
                      where open (r,c,Open i) = True
-                           open (r,c,Mine) = True -- Mine
                            open (r,c,_) = (r,c) `elem` (mines gamestate)
+                           won = gamestate {state = Won}
