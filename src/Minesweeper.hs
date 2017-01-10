@@ -50,8 +50,8 @@ updateSingleCell state showMine (x,y) = newState
               where oldBoard = board state
                     around = minesAround (x,y) state
                     oldField = oldBoard !!! (x,y)
-                    field = if isFieldOnMine (x,y) state == True
-                              then if showMine == True
+                    field = if isFieldOnMine (x,y) state
+                              then if showMine
                                     then Mine
                                     else if oldField == Marked
                                       then Marked
@@ -67,7 +67,7 @@ isFieldOnMine field state = field `elem` listOfMines
 
 updateCells :: GameState -> Coordinates -> GameState
 updateCells gs (x,y) =
-  let coords = (x,y):(neighbours gs (x,y))
+  let coords = (x,y):neighbours gs (x,y)
   in foldl (\st a -> updateSingleCell st False a) gs coords
 
 showMines :: GameState -> GameState
@@ -98,5 +98,5 @@ setState gamestate = if all open [ (x,y,col) | (row, y) <- zip (board gamestate)
                      then won
                      else gamestate
                      where open (r,c,Open i) = True
-                           open (r,c,_) = (r,c) `elem` (mines gamestate)
+                           open (r,c,_) = (r,c) `elem` mines gamestate
                            won = gamestate {state = Won}
